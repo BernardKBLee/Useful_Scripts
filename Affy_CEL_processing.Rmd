@@ -1,0 +1,39 @@
+---
+title: "Affy CEL processing"
+author: "Bernard Lee"
+date: '2021-03-24'
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: inline
+---
+
+#### Load library
+```{r}
+library(affy)
+```
+
+#### Set up working directory
+```{r setup, include=FALSE, echo=FALSE}
+require("knitr")
+opts_knit$set(root.dir = "/Users/mac/Desktop/GSE30784/GSE30784_RAW/")
+```
+
+#### Read and normalize the CEL files
+#### point to the right directory
+```{r}
+data <- ReadAffy()
+eset <- rma(data)
+```
+
+#### Save data
+```{r}
+write.exprs(eset, "_GSE30784.txt")
+```
+
+#### Info
+```{r}
+sessionInfo()
+```
+

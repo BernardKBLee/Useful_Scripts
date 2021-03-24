@@ -1,0 +1,84 @@
+---
+title: "K means clustering"
+author: "Bernard Lee"
+date: '2021-03-18'
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  chunk_output_type: inline
+---
+
+#### Load library
+```{r}
+library(tidyverse)
+library(corrplot)
+
+# Clustering
+library(cluster)
+library(factoextra)
+```
+
+#### Load data
+```{r}
+data <- read_csv("~/Desktop/R_trial/Data/Wholesale customers data.csv")
+head(data, 5)
+```
+
+#### Exploratory data analysis
+```{r}
+data <- na.omit(data)
+str(data)
+
+corrmatrix <- cor(data)
+corrplot(corrmatrix, method = "number")
+
+# Data preparation
+names(data)
+df <- data[-c(1,2)]
+
+# Determine optimal number of clusters (k)
+# Method 1: silhouette score
+silhouette_score <- function(k) {
+  km <- kmeans(df, centers = k, nstart = 25)
+  ss <- silhouette(km$cluster, dist(df))
+  mean(ss[, 3])
+}
+k <- 2:10
+avg_sil <- sapply(k, silhouette_score)
+plot(k, type = "b", avg_sil, xlab = "Number of clusters", ylab = "Average silhouette Score", frame = FALSE)
+
+# Method 2: factoextra
+fviz_nbclust(df, kmeans, method = "silhouette")
+
+# Actual clustering
+km.final <- kmeans(df, 2)
+km.final$tot.withinss
+
+# Cluster sizes
+km.final$size
+km.final$cluster
+data$Cluster <- km.final$cluster
+data
+
+fviz_cluster(data = df, object = km.final, ellipse = TRUE)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
